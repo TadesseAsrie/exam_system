@@ -1,0 +1,67 @@
+export const exams = [
+  {
+    id: 1,
+    title: "Advanced Mathematics",
+    subject: "Mathematics",
+    duration: 60,
+    totalQuestions: 20,
+    difficulty: "Hard",
+    description:
+      "Test your knowledge in Calculus, Linear Algebra, and Differential Equations.",
+    instructions:
+      "This exam contains 20 multiple choice questions. Each question carries 1 mark. No negative marking.",
+    marksPerQuestion: 1,
+    image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400",
+  },
+  {
+    id: 2,
+    title: "Computer Science Fundamentals",
+    subject: "Programming",
+    duration: 45,
+    totalQuestions: 20,
+    difficulty: "Medium",
+    description:
+      "Topics include Data Structures, Algorithms, and Object-Oriented Programming.",
+    instructions: "Answer all questions. Each correct answer gives 1 point.",
+    marksPerQuestion: 1,
+    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400",
+  },
+  {
+    id: 3,
+    title: "General Science",
+    subject: "Science",
+    duration: 30,
+    totalQuestions: 20,
+    difficulty: "Easy",
+    description:
+      "Physics, Chemistry, and Biology basics for competitive exams.",
+    instructions: "Complete within 30 minutes. No negative marking.",
+    marksPerQuestion: 1,
+    image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400",
+  },
+  {
+    id: 4,
+    title: "English Language",
+    subject: "English",
+    duration: 40,
+    totalQuestions: 20,
+    difficulty: "Medium",
+    description: "Grammar, Vocabulary, and Reading Comprehension.",
+    instructions: "Read each question carefully before answering.",
+    marksPerQuestion: 1,
+    image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400",
+  },
+  {
+    id: 5,
+    title: "World History",
+    subject: "History",
+    duration: 50,
+    totalQuestions: 20,
+    difficulty: "Hard",
+    description:
+      "Ancient to Modern World History, Major Events and Personalities.",
+    instructions: "Each question has only one correct answer.",
+    marksPerQuestion: 1,
+    image: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=400",
+  },
+];
