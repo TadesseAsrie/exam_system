@@ -16,6 +16,8 @@ import ExamInstructions from "./pages/ExamInstructions";
 import TakeExam from "./pages/TakeExam";
 import Result from "./pages/Result";
 import Profile from "./pages/Profile";
+import Achievements from "./pages/Achievements";
+import Settings from "./pages/Settings";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -75,6 +77,16 @@ function App() {
       >
         <Route index element={<Profile />} />
       </Route>
+      <Route
+        path="/achievements"
+        element={
+          <ProtectedRoute>
+            <PrivateLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Achievements />} />
+      </Route>
 
       <Route
         path="/results"
@@ -117,7 +129,18 @@ function App() {
           </ProtectedRoute>
         }
       >
+
         <Route index element={<Result />} />
+      </Route>
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <PrivateLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Settings />} />
       </Route>
 
       {/* 404 Route */}

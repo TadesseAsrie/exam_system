@@ -1,14 +1,21 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useExam } from "../context/ExamContext";
 import ResultCard from "../components/ResultCard";
-import { FiRotateCcw, FiHome, FiDownload } from "react-icons/fi";
+import {
+  FiCheckCircle,
+  FiXCircle,
+  FiChevronDown,
+  FiChevronUp,
+} from "react-icons/fi";
 
 const Result = () => {
   const { examId } = useParams();
   const navigate = useNavigate();
   const { examResults, resetExam, allExams } = useExam();
   const [result, setResult] = useState(null);
+  const [expanded, setExpanded] = useState(null); // track which question is expanded, or all
 
   useEffect(() => {
     if (!examResults) {
@@ -20,30 +27,142 @@ const Result = () => {
 
   const handleRetake = () => {
     resetExam();
+    localStorage.removeItem(`exam_${examId}_completed`);
     navigate(`/exam/${examId}/instructions`);
+  };
+
+  // Toggle expanded view for a specific question
+  const toggleExpand = (index) => {
+    setExpanded(expanded === index ? null : index);
   };
 
   if (!result) return null;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
+      {/* Summary Card */}
       <ResultCard result={result} />
 
+      {/* Detailed Breakdown */}
+      <div className="glass-card rounded-2xl p-6">
+        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+          <FiCheckCircle className="text-green-500" /> Question Review
+        </h3>
+        <div className="space-y-4">
+          {result.detailedResults.map((item, index) => (
+            <div
+              key={item.questionId}
+              className={`border-l-4 rounded-xl p-4 transition-all ${
+                item.isCorrect
+                  ? "border-green-500 bg-green-50 dark:bg-green-900/10"
+                  : "border-red-500 bg-red-50 dark:bg-red-900/10"
+              }`}
+            >
+              <div
+                className="flex items-start justify-between cursor-pointer"
+                onClick={() => toggleExpand(index)}
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Q{index + 1}.</span>
+                    <span className="text-sm font-medium">
+                      {item.questionText}
+                    </span>
+                    {item.isCorrect ? (
+                      <FiCheckCircle
+                        className="text-green-600 ml-2"
+                        size={18}
+                      />
+                    ) : (
+                      <FiXCircle className="text-red-600 ml-2" size={18} />
+                    )}
+                  </div>
+                  <div className="mt-1 flex flex-wrap gap-4 text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Your answer:{" "}
+                      <span
+                        className={`font-semibold ${item.isCorrect ? "text-green-600" : "text-red-600"}`}
+                      >
+                        {item.userAnswer || "Not answered"}
+                      </span>
+                    </span>
+                    {!item.isCorrect && (
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Correct answer:{" "}
+                        <span className="font-semibold text-green-600">
+                          {item.correctAnswer}
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="ml-4 text-gray-400">
+                  {expanded === index ? <FiChevronUp /> : <FiChevronDown />}
+                </div>
+              </div>
+
+              {/* Expanded view: show all options with correct/incorrect highlighting */}
+              {expanded === index && (
+                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <div className="grid grid-cols-1 gap-2">
+                    {item.options.map((option, optIdx) => {
+                      const letter = String.fromCharCode(65 + optIdx);
+                      const isUserSelected = item.userAnswer === letter;
+                      const isCorrectAnswer = item.correctAnswer === letter;
+                      let bgClass = "bg-gray-50 dark:bg-gray-800";
+                      if (isCorrectAnswer)
+                        bgClass =
+                          "bg-green-100 dark:bg-green-900/30 border-green-400";
+                      else if (isUserSelected && !isCorrectAnswer)
+                        bgClass =
+                          "bg-red-100 dark:bg-red-900/30 border-red-400";
+
+                      return (
+                        <div
+                          key={optIdx}
+                          className={`flex items-center gap-3 p-2 rounded-lg border ${bgClass}`}
+                        >
+                          <span className="font-mono text-sm font-bold w-6">
+                            {letter}
+                          </span>
+                          <span className="flex-1">{option}</span>
+                          {isCorrectAnswer && (
+                            <FiCheckCircle
+                              className="text-green-600"
+                              size={16}
+                            />
+                          )}
+                          {isUserSelected && !isCorrectAnswer && (
+                            <FiXCircle className="text-red-600" size={16} />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-2 text-xs text-gray-500">
+                    Explanation:{" "}
+                    {item.explanation || "No explanation provided."}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Action Buttons */}
       <div className="flex flex-wrap gap-4 justify-center">
         <button
           onClick={handleRetake}
           className="btn-secondary flex items-center gap-2"
         >
-          <FiRotateCcw /> Retake Exam
+          Retake Exam
         </button>
         <button
           onClick={() => navigate("/dashboard")}
           className="btn-secondary flex items-center gap-2"
         >
-          <FiHome /> Dashboard
-        </button>
-        <button className="btn-primary flex items-center gap-2">
-          <FiDownload /> Download Certificate
+          Dashboard
         </button>
       </div>
     </div>
@@ -51,130 +170,3 @@ const Result = () => {
 };
 
 export default Result;
-
-
-
-
-
-// import React, { useEffect, useState } from "react";
-// import { useParams, useNavigate } from "react-router-dom";
-// import { useExam } from "../context/ExamContext";
-// import { FiHome, FiDownload } from "react-icons/fi";
-
-// const Result = () => {
-//   const { examId } = useParams();
-//   const navigate = useNavigate();
-//   const { examResults, currentQuestions, userAnswers } = useExam();
-//   const [result, setResult] = useState(null);
-
-//   useEffect(() => {
-//     if (!examResults) {
-//       navigate("/exams");
-//       return;
-//     }
-//     setResult(examResults);
-//     // Lock the exam after submission
-//     localStorage.setItem(`exam_${examId}_completed`, "true");
-//   }, [examResults, examId, navigate]);
-
-//   // Compute per-question breakdown
-//   const getBreakdown = () => {
-//     if (!currentQuestions || !userAnswers) return null;
-//     let correctCount = 0;
-//     const details = currentQuestions.map((q) => {
-//       const userAns = userAnswers[q.id] || null;
-//       const isCorrect = userAns === q.correct;
-//       if (isCorrect) correctCount++;
-//       return {
-//         question: q.question,
-//         options: { A: q.A, B: q.B, C: q.C, D: q.D },
-//         userAnswer: userAns,
-//         correctAnswer: q.correct,
-//         correctDisplay: `${q.correct}. ${q[q.correct]}`,
-//         isCorrect,
-//       };
-//     });
-//     return { correctCount, failedCount: currentQuestions.length - correctCount, details };
-//   };
-
-//   const breakdown = getBreakdown();
-
-//   if (!result || !breakdown) return null;
-
-//   return (
-//     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-//       {/* Score summary */}
-//       <div className="glass-card rounded-2xl p-6 text-center">
-//         <h2 className="text-3xl font-bold mb-2">📊 Exam Results</h2>
-//         <p className="text-xl">
-//           Total Score: <strong>{breakdown.correctCount} / {currentQuestions.length}</strong>
-//         </p>
-//         <div className="flex justify-center gap-6 mt-2">
-//           <span className="text-green-600">✅ Correct: {breakdown.correctCount}</span>
-//           <span className="text-red-600">❌ Failed: {breakdown.failedCount}</span>
-//         </div>
-//       </div>
-
-//       {/* Per-question breakdown */}
-//       <div className="space-y-4">
-//         {breakdown.details.map((d, idx) => (
-//           <div key={idx} className="glass-card rounded-2xl p-4">
-//             <p className="font-semibold">
-//               {idx + 1}. {d.question}
-//             </p>
-//             <div className="mt-2 space-y-1">
-//               {["A", "B", "C", "D"].map((letter) => {
-//                 const isUserChoice = d.userAnswer === letter;
-//                 const isCorrectChoice = d.correctAnswer === letter;
-//                 return (
-//                   <div
-//                     key={letter}
-//                     className={`flex items-center gap-2 p-1 rounded ${
-//                       isUserChoice
-//                         ? isCorrectChoice
-//                           ? "bg-green-100 dark:bg-green-900/30"
-//                           : "bg-red-100 dark:bg-red-900/30"
-//                         : ""
-//                     }`}
-//                   >
-//                     <span className="w-6 font-medium">{letter}.</span>
-//                     <span>{d.options[letter]}</span>
-//                     {isUserChoice && (
-//                       <span className="ml-auto text-sm font-medium">
-//                         {isCorrectChoice ? "✅ Your choice" : "❌ Your choice"}
-//                       </span>
-//                     )}
-//                     {isCorrectChoice && !isUserChoice && (
-//                       <span className="ml-auto text-sm text-green-600">✓ Correct answer</span>
-//                     )}
-//                   </div>
-//                 );
-//               })}
-//             </div>
-//             <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-//               Correct answer: <span className="font-medium text-green-600">{d.correctDisplay}</span>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-
-//       {/* Action buttons – NO retake */}
-//       <div className="flex flex-wrap gap-4 justify-center">
-//         <button
-//           onClick={() => navigate("/dashboard")}
-//           className="btn-secondary flex items-center gap-2"
-//         >
-//           <FiHome /> Dashboard
-//         </button>
-//         <button className="btn-primary flex items-center gap-2">
-//           <FiDownload /> Download Certificate
-//         </button>
-//         <p className="text-sm text-red-500 w-full text-center mt-2">
-//           ⛔ Exam completed – you cannot retake this exam.
-//         </p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Result;
