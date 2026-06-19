@@ -67,7 +67,6 @@ function App() {
       >
         <Route index element={<Exams />} />
       </Route>
-
       <Route
         path="/profile"
         element={
