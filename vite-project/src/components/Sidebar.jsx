@@ -15,8 +15,7 @@ const Sidebar = ({ sidebarOpen }) => {
   const navItems = [
     { path: "/dashboard", icon: FiHome, label: "Dashboard" },
     { path: "/exams", icon: FiFileText, label: "Exams" },
-    { path: "/profile", icon: FiUser, label: "Profile" },
-    { path: "/results", icon: FiTrendingUp, label: "Results" },
+
     { path: "/achievements", icon: FiAward, label: "Achievements" },
     { path: "/settings", icon: FiSettings, label: "Settings" },
   ];
