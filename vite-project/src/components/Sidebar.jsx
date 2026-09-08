@@ -1,50 +1,73 @@
+
 import React from "react";
 import { NavLink } from "react-router-dom";
 import {
   FiHome,
-  FiBarChart2,
   FiFileText,
-  FiUser,
   FiSettings,
-  FiTrendingUp,
   FiBookOpen,
   FiAward,
 } from "react-icons/fi";
 
-const Sidebar = ({ sidebarOpen }) => {
+const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const navItems = [
     { path: "/dashboard", icon: FiHome, label: "Dashboard" },
     { path: "/exams", icon: FiFileText, label: "Exams" },
-
     { path: "/achievements", icon: FiAward, label: "Achievements" },
     { path: "/settings", icon: FiSettings, label: "Settings" },
   ];
 
   return (
-    <aside
-      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 z-20 ${sidebarOpen ? "w-64" : "w-20"}`}
-    >
-      <div className="flex flex-col h-full py-6">
-        <div className="flex-1">
-          <nav className="space-y-1 px-3">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `sidebar-link ${isActive ? "sidebar-link-active" : ""} ${!sidebarOpen && "justify-center"}`
-                }
-                title={!sidebarOpen ? item.label : ""}
-              >
-                <item.icon size={20} />
-                {sidebarOpen && <span>{item.label}</span>}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-10 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-        {sidebarOpen && (
-          <div className="px-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+      {/* Sidebar Container */}
+      <aside
+        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 z-20 
+          ${sidebarOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0 md:w-20"}
+        `}
+      >
+        <div className="flex flex-col h-full py-6">
+          <div className="flex-1">
+            <nav className="space-y-1 px-3">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => {
+                    // Auto-close menu on click for small screens
+                    if (window.innerWidth < 768) {
+                      setSidebarOpen(false);
+                    }
+                  }}
+                  className={({ isActive }) =>
+                    `sidebar-link ${isActive ? "sidebar-link-active" : ""} ${
+                      !sidebarOpen && "md:justify-center"
+                    }`
+                  }
+                  title={!sidebarOpen ? item.label : ""}
+                >
+                  <item.icon size={20} />
+                  <span className={sidebarOpen ? "block" : "hidden md:hidden"}>
+                    {item.label}
+                  </span>
+                </NavLink>
+              ))}
+            </nav>
+          </div>
+
+          {/* Quick Stats Footer */}
+          <div
+            className={`px-6 pt-6 border-t border-gray-200 dark:border-gray-700 ${
+              sidebarOpen ? "block" : "hidden"
+            }`}
+          >
             <div className="glass-card rounded-xl p-4">
               <div className="flex items-center gap-3 mb-3">
                 <FiBookOpen className="text-blue-500" />
@@ -66,9 +89,9 @@ const Sidebar = ({ sidebarOpen }) => {
               </div>
             </div>
           </div>
-        )}
-      </div>
-    </aside>
+        </div>
+      </aside>
+    </>
   );
 };
 
